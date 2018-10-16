@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">The K App</string>
+    <string name="base_url">https://api.84r.co</string>
+    <string name="error_empty_email">email required</string>
+    <string name="error_empty_password">password required</string>
+    <string name="error_invalid_email">Invalid email address</string>
+    <string name="error_weak_password">The password should be atleast 6 characters</string>
+</resources>
