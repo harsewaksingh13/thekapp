@@ -14,8 +14,8 @@ import com.harsewak.kapp.getApplication
 @SuppressLint("Registered")
 abstract class BaseActivity<P : Presenter> : AppCompatActivity(), View {
 
-    lateinit var presenter: P
-    lateinit var component: ActivityComponent
+    var presenter: P? = null
+    private lateinit var component: ActivityComponent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,24 +24,24 @@ abstract class BaseActivity<P : Presenter> : AppCompatActivity(), View {
                 .applicationComponent(applicationComponent())
                 .build()
         presenter = presenter(component)
-        presenter.onCreate(this, savedInstanceState)
+        presenter?.onCreate(this, savedInstanceState)
     }
 
     abstract fun presenter(component: ActivityComponent): P
 
 
     private fun applicationComponent(): ApplicationComponent {
-        return getApplication(applicationContext).applicationComponent
+        return application().applicationComponent
     }
 
     override fun onResume() {
         super.onResume()
-        presenter.onResume()
+        presenter?.onResume()
     }
 
     override fun onPause() {
         super.onPause()
-        presenter.onPause()
+        presenter?.onPause()
     }
 
     override fun onError(error: String) {
@@ -54,6 +54,10 @@ abstract class BaseActivity<P : Presenter> : AppCompatActivity(), View {
     }
 
     override fun showProgress() {
+
+    }
+
+    override fun dismissProgress() {
 
     }
 }

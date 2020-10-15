@@ -7,21 +7,42 @@ import android.arch.persistence.room.Query
 import com.harsewak.kapp.data.models.User
 import io.reactivex.Flowable
 
+interface BaseDao<T>{
+
+    fun save(obj: T) : Long
+
+    fun get(id: String): Flowable<T>
+
+    fun delete(obj: T): Int
+
+    fun getAll(): Flowable<List<T>>
+}
+
+open abstract class BaseDaoImpl<T> : BaseDao<T> {
+
+    fun selectAll() : String {
+        return ""
+    }
+
+}
+
 @Dao()
-interface Users {
+abstract class Users : BaseDaoImpl<User>() {
 
     companion object {
         const val NAME = "users"
     }
 
     @Insert
-    fun save(user: User): Long
+    abstract override fun save(obj: User): Long
 
-    @Suppress("AndroidUnresolvedRoomSqlReference")
     @Query("SELECT * FROM $NAME WHERE id = :id")
-    fun get(id: String): Flowable<User>
+    abstract override fun get(id: String): Flowable<User>
 
     @Delete
-    fun delete(user: User): Int
+    abstract override fun delete(obj: User): Int
+
+    @Query("SELECT * FROM $NAME")
+    abstract override fun getAll(): Flowable<List<User>>
 }
 

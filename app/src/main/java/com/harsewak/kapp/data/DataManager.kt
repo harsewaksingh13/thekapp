@@ -2,13 +2,19 @@ package com.harsewak.kapp.data
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.harsewak.kapp.api.ErrorHandler
+import com.harsewak.kapp.api.RequestHandler
+import com.harsewak.kapp.api.ResponseHandler
 import com.harsewak.kapp.data.models.User
+import com.harsewak.kapp.data.tables.BaseDao
 import com.harsewak.kapp.data.tables.Users
 import io.reactivex.Flowable
 import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 interface DataManager {
-    fun users(): UserManager
+    fun users(): UsersImpl
     fun preferences(): PreferencesManager
     fun saveToken(token: String?)
     fun getToken(): String?
@@ -34,7 +40,7 @@ class LocalDataManager(val context: Context, private val localDatabase: LocalDat
 
     private val preferencesManager: PreferencesManager = LocalPreferencesManager(context)
 
-    override fun users(): UserManager = UserManager.getInstance(localDatabase)!!
+    override fun users(): UsersImpl = UsersImpl.getInstance(localDatabase)!!
 
     override fun preferences(): PreferencesManager = preferencesManager
 
@@ -47,29 +53,48 @@ class LocalDataManager(val context: Context, private val localDatabase: LocalDat
 
 interface DatabaseTable<T> {
 
-    fun save(t: T): Single<Long>
+    fun save(obj: T): Single<Long>
 
     fun get(id: String): Flowable<T>
 
-    fun delete(t: T): Single<Int>
+    fun delete(obj: T): Single<Int>
+
+    fun getAll(): Flowable<List<T>>
+}
+
+typealias SingleExecutor<T> = Single<T>
+
+fun <T> SingleExecutor<T>.execute(responseHandler: ResponseHandler<T>, errorHandler: ErrorHandler): RequestHandler {
+    return RequestHandler(compose { it.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())}.subscribe({ responseHandler(it) }, { errorHandler(it) }))
+}
+
+typealias FlowableExecutor<T> = Flowable<T>
+
+fun <T> FlowableExecutor<T>.execute(responseHandler: ResponseHandler<T>, errorHandler: ErrorHandler): RequestHandler {
+    return RequestHandler(compose { it.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())}.subscribe({ responseHandler(it) }, { errorHandler(it) }))
+}
+
+open class DatabaseTableImpl<T>(private val dao: BaseDao<T>) : DatabaseTable<T> {
+    override fun save(obj: T): SingleExecutor<Long> = Single.fromCallable { dao.save(obj) }
+
+    override fun get(id: String): FlowableExecutor<T> = dao.get(id)
+
+    override fun delete(obj: T): SingleExecutor<Int> = Single.fromCallable { dao.delete(obj) }
+
+    override fun getAll(): FlowableExecutor<List<T>> = dao.getAll()
+
 }
 
 /** perform CRUD operation on User object*/
-class UserManager(private val users: Users) : DatabaseTable<User> {
-
-    override fun save(t: User): Single<Long> = Single.fromCallable { users.save(t) }
-
-    override fun get(id: String): Flowable<User> = users.get(id)
-
-    override fun delete(t: User): Single<Int> = Single.fromCallable { users.delete(t) }
+class UsersImpl(users: Users) : DatabaseTableImpl<User>(users) {
 
     companion object {
-        private var INSTANCE: UserManager? = null
+        private var INSTANCE: UsersImpl? = null
 
-        fun getInstance(localDatabase: LocalDatabase): UserManager? {
+        fun getInstance(localDatabase: LocalDatabase): UsersImpl? {
             if (INSTANCE == null) {
-                synchronized(UserManager::class) {
-                    INSTANCE = UserManager(localDatabase.users())
+                synchronized(UsersImpl::class) {
+                    INSTANCE = UsersImpl(localDatabase.users())
                 }
             }
             return INSTANCE

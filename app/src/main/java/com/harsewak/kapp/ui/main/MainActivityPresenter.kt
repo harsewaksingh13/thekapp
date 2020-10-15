@@ -4,11 +4,11 @@ import com.harsewak.kapp.base.BasePresenter
 import com.harsewak.kapp.base.Presenter
 import com.harsewak.kapp.base.View
 
-class MainActivityPresenter : BasePresenter<MainView>() {
+class MainActivityPresenter : BasePresenter<MainView>() , MainPresenter {
 
 }
 
-interface MainPresenter : Presenter{
+interface MainPresenter : Presenter {
 
 }
 

@@ -25,15 +25,15 @@ class LoginActivity :BaseActivity<LoginActivityPresenter>(), LoginView {
         setContentView(R.layout.activity_login)
         email = findViewById(R.id.emailEditText)
         password = findViewById(R.id.passwordEditText)
-        findViewById<Button>(R.id.buttonLogin).setOnClickListener {presenter.onLoginClicked()}
+        findViewById<Button>(R.id.buttonLogin).setOnClickListener {presenter?.onLoginClicked()}
     }
 
     override fun getEmail(): String {
-        return email.getString()
+        return "john.smith@gmail.com"//email.getString()
     }
 
     override fun getPassword(): String {
-        return password.getString()
+        return "123456"//password.getString()
     }
 
     override fun onSuccessLogin() {

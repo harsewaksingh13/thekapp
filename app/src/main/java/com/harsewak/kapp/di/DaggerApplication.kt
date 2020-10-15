@@ -5,7 +5,6 @@ import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.harsewak.kapp.R
-import com.harsewak.kapp.api.Service
 import com.harsewak.kapp.api.ServiceManager
 import com.harsewak.kapp.api.ServiceManagerImpl
 import com.harsewak.kapp.api.request.HeaderInterceptor
@@ -32,16 +31,15 @@ class ApplicationModule(private val application: Application) {
     fun context(): Context = application.applicationContext
 
     @Provides
-    @Singleton
-    fun serviceManager(service: Service): ServiceManager = ServiceManagerImpl(service)
+    fun serviceManager(service: Retrofit): ServiceManager = ServiceManagerImpl(service)
 
     @Provides
     @Singleton
     fun baseUrl(context: Context): String = context.getString(R.string.base_url)
 
-    @Provides
-    @Singleton
-    fun service(retrofit: Retrofit): Service = retrofit.create(Service::class.java)
+//    @Provides
+//    @Singleton
+//    fun service(retrofit: Retrofit): Service = retrofit.create(Service::class.java)
 
     @Provides
     fun retrofit(baseUrl: String, okHttpClient: OkHttpClient, gsonConverterFactory: GsonConverterFactory): Retrofit = Retrofit.Builder().baseUrl(baseUrl).client(okHttpClient).addConverterFactory(gsonConverterFactory).addCallAdapterFactory(RxJava2CallAdapterFactory.create()).build()

@@ -9,7 +9,7 @@ import com.harsewak.kapp.api.ServiceManager
 import com.harsewak.kapp.api.response.LoginResponse
 import com.harsewak.kapp.data.DataManager
 import com.harsewak.kapp.data.LocalDatabase
-import com.harsewak.kapp.data.UserManager
+import com.harsewak.kapp.data.UsersImpl
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
@@ -143,7 +143,7 @@ class LoginPresenterRobot(val context: Context) {
         `when`(serviceManager.login(email, password))
                 .thenReturn(Observable.just<LoginResponse>(successResponse()))
 
-        `when`(dataManager.users()).thenReturn(UserManager(database.users()))
+        `when`(dataManager.users()).thenReturn(UsersImpl(database.users()))
 
         login()
         verify(view).onSuccessLogin()

@@ -2,7 +2,6 @@ package com.harsewak.kapp.api
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import java.util.*
 
 interface Response {
     fun getError(): Error?

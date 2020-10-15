@@ -14,4 +14,5 @@ interface View {
     fun onError(error: String)
     fun <T> startActivity(clazz: Class<T>)
     fun showProgress()
+    fun dismissProgress()
 }

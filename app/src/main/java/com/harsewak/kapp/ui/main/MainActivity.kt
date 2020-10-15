@@ -5,7 +5,7 @@ import com.harsewak.kapp.R
 import com.harsewak.kapp.base.BaseActivity
 import com.harsewak.kapp.di.ActivityComponent
 
-class MainActivity : BaseActivity<MainActivityPresenter>() {
+class MainActivity : BaseActivity<MainPresenter>() {
 
     override fun presenter(component: ActivityComponent): MainActivityPresenter {
         return MainActivityPresenter()
